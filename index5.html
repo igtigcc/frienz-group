@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Freindz | Hangout Together</title>
+
+<style>
+/* Theme colors used throughout the website. */
+:root{--bg:#fff5f8;--card:#fff;--text:#382a3c;--muted:#8b788d;--primary:#ed5b91;--secondary:#ffe1ed;--border:#f2d9e5}
+
+/* Reset default spacing and set the main page appearance. */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Trebuchet MS",Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:.3s}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--primary);outline-offset:3px}
+
+/* Main page layout and header. */
+.app{max-width:1100px;margin:auto;padding:25px}
+header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:30px}
+.logo{display:flex;align-items:center;gap:10px;border:0;background:none;color:var(--text);font-size:27px;font-weight:900}
+.logo svg{width:52px;height:52px}
+.header-buttons{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+/* Shared button styles. */
+.btn{border:0;background:var(--primary);color:white;border-radius:14px;padding:12px 18px;font-weight:bold;transition:.2s}
+.btn:hover{transform:translateY(-2px);filter:brightness(.96)}
+.btn.secondary{background:var(--secondary);color:var(--text)}
+
+/* Home page hero section. */
+.hero{background:var(--secondary);border-radius:30px;padding:40px;display:flex;align-items:center;justify-content:space-between;gap:25px;margin-bottom:25px}
+.hero h1{font-size:clamp(32px,5vw,54px);line-height:1.1;margin-bottom:15px}
+.hero p{color:var(--muted);font-size:17px;line-height:1.7;max-width:520px}
+.hero-art{font-size:90px}
+
+/* Cards, panels, and page headings. */
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.card,.panel{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:24px;margin-bottom:18px}
+.card h2{font-size:20px;margin:8px 0 12px}
+.card p{color:var(--muted);line-height:1.6;margin-bottom:18px}
+.card-icon{font-size:35px}
+.page{display:none}
+.page.active{display:block}
+.page-title{margin-bottom:25px}
+.page-title h1{font-size:35px;margin-bottom:10px}
+.page-title p{color:var(--muted)}
+
+/* Form fields and text areas. */
+.field{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.field label{font-weight:bold}
+.field input,.field select,textarea{width:100%;padding:13px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text)}
+textarea{resize:vertical;min-height:90px}
+
+/* Calendar layout and event cards. */
+.calendar-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
+.day-name{text-align:center;color:var(--muted);font-weight:bold;padding:10px 0}
+.day{min-height:58px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text);font-weight:bold}
+.day.selected{background:var(--primary);color:white}
+.event-list{margin-top:20px}
+.event{padding:14px;background:var(--secondary);border-radius:12px;margin-top:10px}
+.event strong{display:block;margin-bottom:5px}
+
+/* Chat sidebar, contacts, messages, and message form. */
+.chat-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:16px}
+.chat-sidebar{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:12px}
+.chat-sidebar h3{margin:4px 8px 12px}
+.contact-list{display:flex;flex-direction:column;gap:7px}
+.contact-button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:11px;border:0;border-radius:12px;background:transparent;color:var(--text)}
+.contact-button.active,.contact-button:hover{background:var(--secondary)}
+.contact-avatar{display:grid;place-items:center;flex:0 0 36px;height:36px;border-radius:50%;background:var(--primary);color:white;font-weight:bold}
+.chat-main{min-width:0}
+.chat-person{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-weight:bold}
+.chat-window{display:flex;flex-direction:column;gap:12px;min-height:250px;max-height:400px;overflow-y:auto;margin-bottom:20px;border:1px solid var(--border);border-radius:16px;padding:15px;background:var(--bg)}
+.message{background:var(--secondary);padding:13px 16px;border-radius:18px;max-width:80%;align-self:flex-start;overflow-wrap:anywhere}
+.message.mine{align-self:flex-end;background:var(--primary);color:white}
+.message small{display:block;opacity:.7;margin-top:6px}
+.chat-form{display:flex;gap:10px}
+.chat-form input{flex:1;min-width:0;padding:13px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text)}
+
+/* Settings and profile page styles. */
+.theme-options{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.theme-choice{padding:15px;border:2px solid var(--border);border-radius:15px;background:var(--bg);color:var(--text)}
+.theme-choice.active{border-color:var(--primary)}
+.theme-choice span{display:block;font-size:25px;margin-bottom:7px}
+.volume{width:100%;accent-color:var(--primary)}
+.profile-layout{display:grid;grid-template-columns:180px minmax(0,1fr);gap:22px;align-items:start}
+.profile-photo{width:150px;height:150px;border-radius:50%;object-fit:cover;background:var(--secondary);border:3px solid var(--border);display:grid;place-items:center;font-size:48px;color:var(--muted)}
+.profile-preview{display:flex;flex-direction:column;align-items:center;gap:12px}
+.request-card{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border:1px solid var(--border);border-radius:14px;margin-top:10px;background:var(--bg)}
+.request-person{display:flex;align-items:center;gap:10px}
+.request-actions{display:flex;gap:8px;flex-wrap:wrap}
+.color-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.color-field{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;background:var(--bg);border-radius:12px}
+.color-field input{width:48px;height:38px;border:0;background:transparent;padding:0;cursor:pointer}
+
+/* Looking for Group board styles. */
+.lfg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.lfg-card{border:1px solid var(--border);border-radius:18px;padding:18px;background:var(--card)}
+.lfg-card h3{margin-bottom:8px}
+.lfg-meta{color:var(--muted);font-size:14px;margin:8px 0 14px}
+.lfg-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+/* Slide-out navigation menu. */
+.menu-overlay{position:fixed;inset:0;background:#24152c66;z-index:5;display:none}
+.menu-overlay.open{display:block}
+.menu{position:fixed;top:0;left:0;bottom:0;width:min(340px,85vw);background:var(--card);padding:25px;z-index:6;transform:translateX(-110%);transition:transform .25s;display:flex;flex-direction:column;gap:12px}
+.menu.open{transform:translateX(0)}
+.menu button{text-align:left;padding:16px;border:0;background:var(--bg);color:var(--text);border-radius:12px;font-weight:bold}
+.menu .close-menu{align-self:flex-end;background:none;font-size:22px}
+.menu-logo{font-size:25px;font-weight:900;margin-bottom:20px}
+
+/* Sign-in and sign-up popup. */
+.modal{display:none;position:fixed;inset:0;z-index:10;background:#24152c99;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}
+.modal-content{background:var(--card);border-radius:24px;padding:30px;width:min(430px,100%);max-height:90vh;overflow-y:auto}
+.modal-content h2{margin-bottom:20px}
+.modal-content .btn{width:100%}
+.modal-switch{text-align:center;margin-top:18px;color:var(--muted)}
+.modal-switch button{background:none;border:0;color:var(--primary);font-weight:bold}
+.account-status{color:var(--muted);font-size:13px}
+footer{text-align:center;padding:30px 0 10px;color:var(--muted)}
+
+/* Dark theme and animated rainbow theme. */
+body.dark{--bg:#211c2b;--card:#30283d;--text:#f9edf5;--muted:#c3b1ca;--primary:#d96aab;--secondary:#48334f;--border:#51435a}
+body.rainbow{animation:rainbow 18s linear infinite}
+@keyframes rainbow{0%{--bg:#fff0f5;--secondary:#ffe0ec;--primary:#e75b91}25%{--bg:#f1f0ff;--secondary:#e1dcff;--primary:#8970e8}50%{--bg:#eaf9f1;--secondary:#d5f1e1;--primary:#48ad83}75%{--bg:#fff5e9;--secondary:#ffead0;--primary:#e69b46}100%{--bg:#fff0f5;--secondary:#ffe0ec;--primary:#e75b91}}
+
+/* Adjust the layout for smaller screens. */
+@media(max-width:750px){
+  .app{padding:16px}.hero{padding:25px}.hero-art{display:none}
+  .cards,.lfg-grid{grid-template-columns:1fr}.calendar-grid{gap:4px}
+  .day{min-height:42px;font-size:13px}.panel{padding:16px}
+  .theme-options,.color-controls{grid-template-columns:1fr}
+  .chat-layout,.profile-layout{grid-template-columns:1fr}
+  .contact-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .profile-preview{align-items:flex-start}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+<header>
+  <!-- Logo button also opens the navigation menu. -->
+  <button class="logo" id="menuButton" aria-label="Open menu">
+    <svg viewBox="0 0 100 100" role="img" aria-label="Heart with hands">
+      <path d="M50 88 C40 78 10 58 10 34 C10 10 39 5 50 26 C61 5 90 10 90 34 C90 58 60 78 50 88Z" fill="#ed5b91"/>
+      <path d="M18 52 Q29 43 40 55 L50 65 L60 55 Q72 43 82 52 L65 73 Q50 85 35 73Z" fill="#fff"/>
+      <path d="M30 43 Q40 39 50 49 Q60 39 70 43 L62 57 L50 67 L38 57Z" fill="#ffe1ed"/>
+      <path d="M30 43 L20 36 M70 43 L80 36" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+    </svg>Freindz
+  </button>
+
+  <!-- Account controls in the top-right corner. -->
+  <div class="header-buttons">
+    <button class="btn secondary" id="loginButton">Log in</button>
+    <button class="btn" id="signupButton">Sign up</button>
+    <span class="account-status" id="accountStatus">Guest</span>
+  </div>
+</header>
+
+<main>
+<!-- Home page with shortcuts to the main features. -->
+<section class="page active" id="home">
+  <div class="hero">
+    <div><h1>Good friends.<br>Great memories. 💗</h1>
+      <p>Your own little space to chat, plan hangouts, and make memories together.</p><br>
+      <button class="btn" onclick="showPage('calendar')">Plan a hangout</button>
+    </div><div class="hero-art" aria-hidden="true">🫶</div>
+  </div>
+
+  <div class="cards">
+    <article class="card"><div class="card-icon">📅</div><h2>Calendar</h2><p>Choose a day and time to meet up.</p><button class="btn" onclick="showPage('calendar')">Open calendar</button></article>
+    <article class="card"><div class="card-icon">💬</div><h2>Chat</h2><p>Switch between conversations in the sidebar.</p><button class="btn" onclick="showPage('chat')">Open chat</button></article>
+    <article class="card"><div class="card-icon">🎵</div><h2>Your space</h2><p>Pick music, volume, and colors.</p><button class="btn" onclick="showPage('settings')">Open settings</button></article>
+    <article class="card"><div class="card-icon">🎮</div><h2>Looking for Group</h2><p>Post a game session or browse demo posts.</p><button class="btn" onclick="showPage('lfg')">Find a group</button></article>
+  </div>
+</section>
+
+<!-- Profile page: profile information, photo, and example chat requests. -->
+<section class="page" id="profile">
+  <div class="page-title"><h1>Your profile 👤</h1><p>Share only what you feel comfortable sharing. Use a general area, not your street address.</p></div>
+  <div class="panel"><form id="profileForm" class="profile-layout">
+    <div class="profile-preview">
+      <img id="profilePhotoPreview" class="profile-photo" alt="Your profile photo" hidden>
+      <div id="profilePhotoPlaceholder" class="profile-photo" aria-hidden="true">📷</div>
+      <label class="btn secondary" for="profilePhoto">Choose photo</label>
+      <input id="profilePhoto" type="file" accept="image/*" hidden>
+    </div>
+    <div>
+      <div class="field"><label for="profileName">Name</label><input id="profileName" maxlength="50" placeholder="What should people call you?"></div>
+      <div class="field"><label for="profileAge">Age</label><input id="profileAge" type="number" min="13" max="120" placeholder="Age"></div>
+      <div class="field"><label for="profileArea">General area where you live</label><input id="profileArea" maxlength="80" placeholder="City or region (not your address)"></div>
+      <div class="field"><label for="profileHobbies">Hobbies</label><input id="profileHobbies" maxlength="160" placeholder="Gaming, music, drawing..."></div>
+      <div class="field"><label for="profileBio">A little about yourself</label><textarea id="profileBio" maxlength="500" placeholder="Tell people a little about you..."></textarea></div>
+      <button class="btn" type="submit">Save profile</button>
+      <p id="profileStatus" role="status" style="margin-top:12px;color:var(--muted)"></p>
+    </div>
+  </form></div>
+  <div class="panel"><h2>Chat requests</h2><p style="color:var(--muted);margin:10px 0">Accept a request to open a conversation, or decline it. These are example requests in this local demo.</p><div id="chatRequests"></div></div>
+</section>
+
+<!-- Calendar page: choose dates and save local hangout events. -->
+<section class="page" id="calendar">
+  <div class="page-title"><h1>Our calendar 📅</h1><p>Pick a date and time for your next hangout.</p></div>
+  <div class="panel">
+    <div class="calendar-head"><button class="btn secondary" id="prevMonth">←</button><h2 id="monthTitle"></h2><button class="btn secondary" id="nextMonth">→</button></div>
+    <div class="calendar-grid" id="calendarGrid"></div><div class="event-list" id="eventList"></div>
+  </div>
+  <div class="panel"><h2>Plan a hangout</h2><br>
+    <form id="eventForm">
+      <div class="field"><label for="eventDate">Date</label><input type="date" id="eventDate" required></div>
+      <div class="field"><label for="eventTime">Time</label><input type="time" id="eventTime" required></div>
+      <div class="field"><label for="eventName">What are we doing?</label><input id="eventName" placeholder="Movie night, walk, gaming..." required></div>
+      <div class="field"><label for="eventPlace">Where are we meeting?</label><input id="eventPlace" placeholder="At the park, online..."></div>
+      <button class="btn" type="submit">Save hangout</button>
+    </form>
+  </div>
+</section>
+
+<!-- Chat page: contact list on the side and selected conversation on the right. -->
+<section class="page" id="chat">
+  <div class="page-title"><h1>Our chat 💬</h1><p>Choose a person on the side to switch conversations.</p></div>
+  <div class="panel chat-layout">
+    <aside class="chat-sidebar"><h3>Messages</h3><div class="contact-list" id="contactList"></div>
+      <button class="btn secondary" id="addContactButton" style="width:100%;margin-top:12px">＋ Add demo person</button>
+    </aside>
+    <div class="chat-main">
+      <div class="chat-person"><span class="contact-avatar" id="activeAvatar">A</span><span id="activeContactName">Alex</span></div>
+      <div class="chat-window" id="chatWindow" aria-live="polite"></div>
+      <form class="chat-form" id="chatForm"><input id="chatInput" placeholder="Write a message..." required autocomplete="off"><button class="btn" type="submit">Send</button></form>
+      <p style="margin-top:15px;color:var(--muted);font-size:13px" id="chatStorageNote"></p>
+    </div>
+  </div>
+</section>
+
+<!-- Looking for Group page: create and browse local demo game posts. -->
+<section class="page" id="lfg">
+  <div class="page-title"><h1>Looking for Group 🎮</h1><p>Local demo board—not a live Xbox service.</p></div>
+  <div class="panel"><h2>Create a group post</h2><br>
+    <form id="lfgForm">
+      <div class="field"><label for="lfgGame">Game</label><input id="lfgGame" placeholder="Minecraft, Fortnite, Rocket League..." required></div>
+      <div class="field"><label for="lfgPlatform">Platform</label><select id="lfgPlatform"><option>Xbox</option><option>PC</option><option>PlayStation</option><option>Switch</option><option>Cross-platform</option></select></div>
+      <div class="field"><label for="lfgPlayers">Players needed</label><select id="lfgPlayers"><option>1</option><option>2</option><option>3</option><option>4+</option></select></div>
+      <div class="field"><label for="lfgDetails">What are you looking for?</label><textarea id="lfgDetails" placeholder="Casual, ranked, mic/no mic..." required></textarea></div>
+      <button class="btn" type="submit">Post group</button>
+    </form>
+  </div>
+  <div class="panel"><h2>Group posts</h2><br><div class="lfg-grid" id="lfgPosts"></div></div>
+</section>
+
+<!-- Settings page: theme, custom colors, and browser-generated music. -->
+<section class="page" id="settings">
+  <div class="page-title"><h1>Settings ⚙️</h1><p>Make Freindz feel like your own space.</p></div>
+  <div class="panel"><h2>Background theme</h2><br>
+    <div class="theme-options">
+      <button class="theme-choice active" data-theme="light"><span>☀️</span>Light</button>
+      <button class="theme-choice" data-theme="dark"><span>🌙</span>Dark</button>
+      <button class="theme-choice" data-theme="rainbow"><span>🌈</span>Changing colors</button>
+    </div>
+  </div>
+  <div class="panel"><h2>Choose your colors 🎨</h2><p style="color:var(--muted);margin:10px 0 16px">Pick each color separately. Your choices are saved in this browser.</p>
+    <div class="color-controls">
+      <label class="color-field">Background <input type="color" id="colorBg" value="#fff5f8"></label>
+      <label class="color-field">Cards <input type="color" id="colorCard" value="#ffffff"></label>
+      <label class="color-field">Text <input type="color" id="colorText" value="#382a3c"></label>
+      <label class="color-field">Accent / buttons <input type="color" id="colorPrimary" value="#ed5b91"></label>
+      <label class="color-field">Soft accent <input type="color" id="colorSecondary" value="#ffe1ed"></label>
+      <label class="color-field">Borders <input type="color" id="colorBorder" value="#f2d9e5"></label>
+    </div><br><button class="btn secondary" id="resetColors" type="button">Reset colors</button>
+  </div>
+  <div class="panel"><h2>Music 🎵</h2><br>
+    <div class="field"><label for="musicSelect">Choose a sound</label>
+      <select id="musicSelect"><option value="none">No music</option><option value="chill">Chill melody</option><option value="happy">Happy melody</option><option value="lofi">Lo-fi melody</option></select>
+    </div>
+    <div class="field"><label for="volume">Volume: <span id="volumeValue">30%</span></label><input class="volume" type="range" id="volume" min="0" max="100" value="30"></div>
+    <button class="btn" id="musicToggle">Play music</button>
+    <p style="margin-top:15px;color:var(--muted)">Original melodies are generated by your browser. No music files required.</p>
+  </div>
+</section>
+</main>
+
+<footer>Made with 💗 by Freindz</footer>
+</div>
+
+<!-- Navigation menu and the dark overlay behind it. -->
+<div class="menu-overlay" id="menuOverlay"></div>
+<nav class="menu" id="menu" aria-label="Main menu">
+  <button class="close-menu" id="closeMenu" aria-label="Close menu">✕</button>
+  <div class="menu-logo">🫶 Freindz</div>
+  <button onclick="showPage('home')">🏠 Home</button>
+  <button onclick="showPage('calendar')">📅 Calendar</button>
+  <button onclick="showPage('profile')">👤 Profile & requests</button>
+  <button onclick="showPage('chat')">💬 Chat</button>
+  <button onclick="showPage('lfg')">🎮 Looking for Group</button>
+  <button onclick="showPage('settings')">⚙️ Settings</button>
+  <button onclick="openAuth('login')">Log in</button>
+  <button onclick="openAuth('signup')">Sign up</button>
+</nav>
+
+<!-- Login and sign-up modal. This is a front-end demo, not real authentication. -->
+<div class="modal" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="modal-content">
+    <h2 id="authTitle">Welcome back 💗</h2>
+    <p style="color:var(--muted);margin-bottom:16px">Demo only. This does not create a real online account. Use a made-up password.</p>
+    <form id="authForm">
+      <div class="field"><label for="authEmail">Email</label><input type="email" id="authEmail" autocomplete="email" required></div>
+      <div class="field"><label for="authPassword">Password</label><input type="password" id="authPassword" minlength="6" autocomplete="current-password" required></div>
+      <button class="btn" type="submit" id="authSubmit">Log in</button>
+    </form>
+    <p class="modal-switch"><span id="authSwitchText">New to Freindz?</span> <button id="authSwitch">Sign up</button></p>
+    <p class="modal-switch"><button id="closeAuth">Close</button></p>
+    <p id="authMessage" role="status" style="margin-top:15px;text-align:center"></p>
+  </div>
+</div>
+
+<script>
+// A short helper for finding page elements by their ID.
+const $ = id => document.getElementById(id);
+
+// Switch between pages, close the menu, and scroll to the top.
+function showPage(page){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  $(page).classList.add("active");closeMenu();window.scrollTo({top:0,behavior:"smooth"});
+}
+
+// Open and close the slide-out navigation menu.
+const menu=$("menu"),overlay=$("menuOverlay");
+function openMenu(){menu.classList.add("open");overlay.classList.add("open")}
+function closeMenu(){menu.classList.remove("open");overlay.classList.remove("open")}
+$("menuButton").addEventListener("click",openMenu);
+$("closeMenu").addEventListener("click",closeMenu);
+overlay.addEventListener("click",closeMenu);
+
+// Escape closes the menu or login modal.
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeMenu();$("authModal").classList.remove("open")}});
+
+// Calendar data is saved locally in this browser.
+let displayedMonth=new Date();displayedMonth.setDate(1);
+let selectedDate="";
+let events=JSON.parse(localStorage.getItem("freindzEvents")||"[]");
+
+// Format a Date object as YYYY-MM-DD for the calendar and date input.
+function dateString(date){
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+}
+
+// Draw the current month, its date buttons, and the saved events.
+function renderCalendar(){
+  const year=displayedMonth.getFullYear(),month=displayedMonth.getMonth();
+  $("monthTitle").textContent=displayedMonth.toLocaleDateString(undefined,{month:"long",year:"numeric"});
+  const grid=$("calendarGrid");grid.innerHTML="";
+  ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(day=>{
+    const el=document.createElement("div");el.className="day-name";el.textContent=day;grid.appendChild(el);
+  });
+  const firstDay=new Date(year,month,1).getDay(),daysInMonth=new Date(year,month+1,0).getDate();
+  for(let i=0;i<firstDay;i++)grid.appendChild(document.createElement("div"));
+  for(let day=1;day<=daysInMonth;day++){
+    const key=dateString(new Date(year,month,day)),button=document.createElement("button");
+    button.className="day";button.textContent=day;button.setAttribute("aria-label",key);
+    if(key===selectedDate)button.classList.add("selected");
+    if(events.some(e=>e.date===key))button.style.boxShadow="inset 0 -4px var(--primary)";
+    button.addEventListener("click",()=>{selectedDate=key;$("eventDate").value=key;renderCalendar()});
+    grid.appendChild(button);
+  }
+  renderEvents();
+}
+
+// Show events for the selected date, or all saved events if none is selected.
+function renderEvents(){
+  const list=$("eventList");list.innerHTML="";
+  const filtered=selectedDate?events.filter(e=>e.date===selectedDate):events;
+  const heading=document.createElement("h3");heading.textContent=selectedDate?"Hangouts on "+selectedDate:"Upcoming hangouts";list.appendChild(heading);
+  if(!filtered.length){const p=document.createElement("p");p.textContent="No hangouts planned yet. Let's make one!";p.style.marginTop="10px";p.style.color="var(--muted)";list.appendChild(p);return}
+  filtered.forEach(event=>{
+    const item=document.createElement("div");item.className="event";
+    const title=document.createElement("strong");title.textContent=event.name;
+    const details=document.createElement("p");details.textContent=`${event.date} at ${event.time}${event.place?" · "+event.place:""}`;
+    const remove=document.createElement("button");remove.className="btn secondary";remove.textContent="Remove";remove.style.marginTop="10px";
+    remove.addEventListener("click",()=>{events.splice(events.indexOf(event),1);localStorage.setItem("freindzEvents",JSON.stringify(events));renderCalendar()});
+    item.append(title,details,remove);list.appendChild(item);
+  });
+}
+
+// Calendar month navigation.
+$("prevMonth").addEventListener("click",()=>{displayedMonth.setMonth(displayedMonth.getMonth()-1);renderCalendar()});
+$("nextMonth").addEventListener("click",()=>{displayedMonth.setMonth(displayedMonth.getMonth()+1);renderCalendar()});
+
+// Save a new hangout and update the calendar.
+$("eventForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const event={date:$("eventDate").value,time:$("eventTime").value,name:$("eventName").value.trim(),place:$("eventPlace").value.trim()};
+  if(!event.date||!event.time||!event.name)return;
+  events.push(event);events.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+  localStorage.setItem("freindzEvents",JSON.stringify(events));selectedDate=event.date;
+  displayedMonth=new Date(event.date+"T12:00:00");displayedMonth.setDate(1);
+  $("eventName").value="";$("eventPlace").value="";renderCalendar();
+});
+$("eventDate").value=dateString(new Date());renderCalendar();
+
+// Guest chats use sessionStorage and clear when the tab/session ends.
+// Signed-in demo chats use localStorage. Neither is a real online chat.
+const contacts=[{id:"alex",name:"Alex",avatar:"A"},{id:"sam",name:"Sam",avatar:"S"},{id:"jordan",name:"Jordan",avatar:"J"}];
+let activeContact="alex",currentUser=null;
+
+// Choose a separate storage key for each demo user, or for guest chats.
+function chatStorageKey(){return currentUser?`freindzChat:${currentUser}`:"freindzGuestChat"}
+
+// Load saved messages safely from the appropriate browser storage.
+function readConversations(){
+  const store=currentUser?localStorage:sessionStorage;
+  try{return JSON.parse(store.getItem(chatStorageKey())||"{}")}catch{return {}}
+}
+
+// Save the current set of conversations to browser storage.
+function saveConversations(data){
+  const store=currentUser?localStorage:sessionStorage;
+  store.setItem(chatStorageKey(),JSON.stringify(data));
+}
+
+// Draw the contact buttons and update the selected contact heading.
+function renderContacts(){
+  const list=$("contactList");list.innerHTML="";
+  contacts.forEach(person=>{
+    const button=document.createElement("button");
+    button.className="contact-button"+(person.id===activeContact?" active":"");
+    const avatar=document.createElement("span");avatar.className="contact-avatar";avatar.textContent=person.avatar;
+    const name=document.createElement("span");name.textContent=person.name;
+    button.append(avatar,name);
+    button.addEventListener("click",()=>{activeContact=person.id;renderContacts();renderChat()});
+    list.appendChild(button);
+  });
+  const person=contacts.find(p=>p.id===activeContact)||contacts[0];
+  $("activeContactName").textContent=person.name;$("activeAvatar").textContent=person.avatar;
+}
+
+// Display messages for the currently selected contact.
+function renderChat(){
+  const windowEl=$("chatWindow");windowEl.innerHTML="";
+  const messages=readConversations()[activeContact]||[];
+  if(!messages.length){const empty=document.createElement("p");empty.style.color="var(--muted)";empty.textContent="No messages here yet. Say hi!";windowEl.appendChild(empty)}
+  messages.forEach(message=>{
+    const bubble=document.createElement("div");bubble.className="message"+(message.mine?" mine":"");
+    const text=document.createElement("span");text.textContent=message.text;
+    const time=document.createElement("small");time.textContent=message.time;
+    bubble.append(text,time);windowEl.appendChild(bubble);
+  });
+  windowEl.scrollTop=windowEl.scrollHeight;
+  $("chatStorageNote").textContent=currentUser
+    ?`Demo account: messages are saved in this browser for ${currentUser}. They are not sent to the contact.`
+    :"Guest messages clear when this tab/session closes. Demo chat does not send messages to other people.";
+}
+
+// Add a message to the selected local demo conversation.
+$("chatForm").addEventListener("submit",e=>{
+  e.preventDefault();const text=$("chatInput").value.trim();if(!text)return;
+  const data=readConversations();data[activeContact]||=[];
+  data[activeContact].push({text,mine:true,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})});
+  saveConversations(data);$("chatInput").value="";renderChat();
+});
+
+// Add a sample contact using a name entered by the user.
+$("addContactButton").addEventListener("click",()=>{
+  const name=prompt("Demo contact name?");if(!name||!name.trim())return;
+  const clean=name.trim(),id="person-"+Date.now();contacts.push({id,name:clean,avatar:clean[0].toUpperCase()});
+  activeContact=id;renderContacts();renderChat();
+});
+renderContacts();renderChat();
+
+// Profile and request examples are stored only in this browser.
+const profileKeys=["profileName","profileAge","profileArea","profileHobbies","profileBio"];
+let profilePhotoData="";
+
+// Load saved profile fields and photo from local browser storage.
+function renderProfile(){
+  try{
+    const p=JSON.parse(localStorage.getItem("freindzProfile")||"{}");
+    profileKeys.forEach(id=>{if(p[id]!==undefined)$(id).value=p[id]});
+    profilePhotoData=p.photo||"";
+    if(profilePhotoData){
+      $("profilePhotoPreview").src=profilePhotoData;
+      $("profilePhotoPreview").hidden=false;
+      $("profilePhotoPlaceholder").hidden=true;
+    }
+  }catch{}
+}
+
+// Read a selected image file and display it as the profile photo.
+$("profilePhoto").addEventListener("change",()=>{
+  const file=$("profilePhoto").files[0];if(!file)return;
+  if(!file.type.startsWith("image/")){alert("Choose an image file.");return}
+  if(file.size>3*1024*1024){alert("Please choose an image smaller than 3 MB.");return}
+  const reader=new FileReader();
+  reader.onload=()=>{
+    profilePhotoData=reader.result;
+    $("profilePhotoPreview").src=profilePhotoData;
+    $("profilePhotoPreview").hidden=false;
+    $("profilePhotoPlaceholder").hidden=true;
+  };
+  reader.readAsDataURL(file);
+});
+
+// Validate and save the profile fields and selected photo.
+$("profileForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const age=Number($("profileAge").value);
+  if($("profileAge").value&&(age<13||age>120)){alert("Enter an age from 13 to 120.");return}
+  const p={};profileKeys.forEach(id=>p[id]=$(id).value.trim());p.photo=profilePhotoData;
+  try{
+    localStorage.setItem("freindzProfile",JSON.stringify(p));
+    $("profileStatus").textContent="Profile saved in this browser.";
+  }catch{
+    $("profileStatus").textContent="Could not save. Try a smaller photo.";
+  }
+});
+
+// Example chat requests for the local demo.
+const demoRequests=[
+  {id:"request-maya",name:"Maya",avatar:"M",about:"Likes cozy games, drawing, and music."},
+  {id:"request-lee",name:"Lee",avatar:"L",about:"Looking for friendly people to play games with."}
+];
+
+// Display each request with buttons to accept or decline it.
+function renderRequests(){
+  const root=$("chatRequests");root.innerHTML="";
+  demoRequests.forEach(req=>{
+    const row=document.createElement("div");row.className="request-card";
+    const person=document.createElement("div");person.className="request-person";
+    const avatar=document.createElement("span");avatar.className="contact-avatar";avatar.textContent=req.avatar;
+    const desc=document.createElement("div");
+    const name=document.createElement("strong");name.textContent=req.name;
+    const about=document.createElement("p");about.textContent=req.about;
+    about.style.cssText="color:var(--muted);font-size:13px;margin-top:4px";
+    desc.append(name,about);person.append(avatar,desc);
+    const actions=document.createElement("div");actions.className="request-actions";
+    const yes=document.createElement("button");yes.className="btn";yes.textContent="Yes";
+
+    // Accepting a request adds that person to the chat list.
+    yes.addEventListener("click",()=>{
+      if(!contacts.some(c=>c.id===req.id))contacts.push({id:req.id,name:req.name,avatar:req.avatar});
+      activeContact=req.id;
+      demoRequests.splice(demoRequests.indexOf(req),1);
+      renderRequests();renderContacts();renderChat();showPage("chat");
+    });
+
+    // Declining removes the request from the list.
+    const no=document.createElement("button");no.className="btn secondary";no.textContent="No";
+    no.addEventListener("click",()=>{
+      demoRequests.splice(demoRequests.indexOf(req),1);
+      renderRequests();
+    });
+    actions.append(yes,no);row.append(person,actions);root.appendChild(row);
+  });
+  if(!demoRequests.length)root.textContent="No pending demo requests.";
+}
+renderProfile();renderRequests();
+
+// Local-only Looking for Group board with sample posts.
+const defaultPosts=[
+  {game:"Minecraft",platform:"Cross-platform",players:"2",details:"Casual survival world — friendly players"},
+  {game:"Rocket League",platform:"Xbox",players:"1",details:"Chill games, mic optional"}
+];
+let lfgPosts=JSON.parse(localStorage.getItem("freindzLfgPosts")||"null")||defaultPosts;
+
+// Draw the saved group posts.
+function renderLfg(){
+  const container=$("lfgPosts");container.innerHTML="";
+  lfgPosts.forEach(post=>{
+    const card=document.createElement("article");card.className="lfg-card";
+    const title=document.createElement("h3");title.textContent="🎮 "+post.game;
+    const meta=document.createElement("p");meta.className="lfg-meta";
+    meta.textContent=`${post.platform} · Looking for ${post.players} player(s)`;
+    const details=document.createElement("p");details.textContent=post.details;
+    const actions=document.createElement("div");actions.className="lfg-actions";
+    const join=document.createElement("button");join.className="btn";join.textContent="I'm interested";
+    join.addEventListener("click",()=>alert("Local demo only. A real join/invite feature needs a server and accounts."));
+    actions.appendChild(join);card.append(title,meta,details,actions);container.appendChild(card);
+  });
+}
+
+// Add a new group post and save it in the browser.
+$("lfgForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  lfgPosts.unshift({
+    game:$("lfgGame").value.trim(),
+    platform:$("lfgPlatform").value,
+    players:$("lfgPlayers").value,
+    details:$("lfgDetails").value.trim()
+  });
+  localStorage.setItem("freindzLfgPosts",JSON.stringify(lfgPosts));
+  $("lfgForm").reset();renderLfg();
+});
+renderLfg();
+
+// Theme settings: apply the selected theme and remember it in local storage.
+document.querySelectorAll(".theme-choice").forEach(button=>{
+  button.addEventListener("click",()=>{
+    document.body.classList.remove("dark","rainbow");
+    if(button.dataset.theme!=="light")document.body.classList.add(button.dataset.theme);
+    document.querySelectorAll(".theme-choice").forEach(b=>b.classList.toggle("active",b===button));
+    localStorage.setItem("freindzTheme",button.dataset.theme);
+  });
+});
+const savedTheme=localStorage.getItem("freindzTheme")||"light";
+if(savedTheme!=="light")document.body.classList.add(savedTheme);
+document.querySelectorAll(".theme-choice").forEach(button=>button.classList.toggle("active",button.dataset.theme===savedTheme));
+
+// Individually customizable theme colors.
+const colorVars={
+  colorBg:"--bg",colorCard:"--card",colorText:"--text",
+  colorPrimary:"--primary",colorSecondary:"--secondary",colorBorder:"--border"
+};
+
+// Apply selected color values to the page's CSS variables.
+function applyCustomColors(values){
+  Object.entries(colorVars).forEach(([id,variable])=>{
+    const value=values[id];
+    if(value){
+      document.documentElement.style.setProperty(variable,value);
+      $(id).value=value;
+    }
+  });
+}
+
+// Restore any colors saved earlier in this browser.
+try{applyCustomColors(JSON.parse(localStorage.getItem("freindzCustomColors")||"{}"))}catch{}
+
+// Save color changes as the user adjusts the color pickers.
+Object.keys(colorVars).forEach(id=>$(id).addEventListener("input",()=>{
+  const values={};Object.keys(colorVars).forEach(key=>values[key]=$(key).value);
+  applyCustomColors(values);
+  localStorage.setItem("freindzCustomColors",JSON.stringify(values));
+}));
+
+// Restore the original theme colors.
+$("resetColors").addEventListener("click",()=>{
+  const defaults={
+    colorBg:"#fff5f8",colorCard:"#ffffff",colorText:"#382a3c",
+    colorPrimary:"#ed5b91",colorSecondary:"#ffe1ed",colorBorder:"#f2d9e5"
+  };
+  localStorage.removeItem("freindzCustomColors");
+  applyCustomColors(defaults);
+});
+
+// Browser-generated melodies; the volume slider changes the master output level.
+let audioContext,masterGain,musicTimer,musicPlaying=false,noteIndex=0;
+const melodies={
+  chill:[261.63,329.63,392,329.63,293.66,349.23,440,349.23],
+  happy:[392,440,523.25,440,392,523.25,587.33,523.25],
+  lofi:[220,261.63,329.63,293.66,196,246.94,293.66,261.63]
+};
+
+// Play the next note in the selected melody.
+function playNote(){
+  if(!audioContext||!masterGain)return;
+  const melody=melodies[$("musicSelect").value];if(!melody)return;
+  const osc=audioContext.createOscillator(),gain=audioContext.createGain();
+  osc.type=$("musicSelect").value==="lofi"?"triangle":"sine";
+  osc.frequency.value=melody[noteIndex%melody.length];
+  gain.gain.setValueAtTime(.0001,audioContext.currentTime);
+  gain.gain.exponentialRampToValueAtTime(.12,audioContext.currentTime+.05);
+  gain.gain.exponentialRampToValueAtTime(.0001,audioContext.currentTime+.6);
+  osc.connect(gain);gain.connect(masterGain);osc.start();osc.stop(audioContext.currentTime+.65);noteIndex++;
+}
+
+// Stop the melody timer and reset the music button.
+function stopMusic(){clearInterval(musicTimer);musicPlaying=false;$("musicToggle").textContent="Play music"}
+
+// Start or stop music using the browser's Web Audio API.
+async function toggleMusic(){
+  if(musicPlaying){stopMusic();return}
+  if($("musicSelect").value==="none")$("musicSelect").value="chill";
+  const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+  if(!AudioContextClass){alert("Your browser does not support this music player.");return}
+  audioContext ||= new AudioContextClass();await audioContext.resume();
+  masterGain ||= audioContext.createGain();
+  masterGain.connect(audioContext.destination);
+  masterGain.gain.value=Number($("volume").value)/100;
+  musicPlaying=true;$("musicToggle").textContent="Stop music";
+  playNote();musicTimer=setInterval(playNote,650);
+}
+$("musicToggle").addEventListener("click",toggleMusic);
+
+// Update the displayed volume and adjust music volume while it plays.
+$("volume").addEventListener("input",()=>{
+  $("volumeValue").textContent=$("volume").value+"%";
+  if(masterGain)masterGain.gain.value=Number($("volume").value)/100;
+});
+
+// Restart the melody if the user changes the selected music.
+$("musicSelect").addEventListener("change",()=>{if(musicPlaying){stopMusic();toggleMusic()}});
+
+// Front-end-only demo sign-in. No passwords are stored persistently.
+let authMode="login",demoAccounts={};
+
+// Open the authentication popup in login or sign-up mode.
+function openAuth(mode){authMode=mode;updateAuth();$("authModal").classList.add("open");$("authMessage").textContent=""}
+
+// Update the popup's text and form settings for the chosen mode.
+function updateAuth(){
+  const signup=authMode==="signup";
+  $("authTitle").textContent=signup?"Join Freindz 💗":"Welcome back 💗";
+  $("authSubmit").textContent=signup?"Create demo account":"Log in";
+  $("authSwitchText").textContent=signup?"Already signed up in this tab?":"New to Freindz?";
+  $("authSwitch").textContent=signup?"Log in":"Sign up";
+  $("authPassword").autocomplete=signup?"new-password":"current-password";
+}
+
+// Update the page to show the current demo account.
+function setSignedIn(email){
+  currentUser=email;$("accountStatus").textContent="Signed in (demo)";
+  $("loginButton").textContent="Log out";renderChat();
+}
+
+// Log out, or open the login popup if currently a guest.
+$("loginButton").addEventListener("click",()=>{
+  if(currentUser){
+    currentUser=null;$("accountStatus").textContent="Guest";
+    $("loginButton").textContent="Log in";renderChat();
+  }else openAuth("login");
+});
+$("signupButton").addEventListener("click",()=>openAuth("signup"));
+
+// Switch between login and sign-up modes.
+$("authSwitch").addEventListener("click",()=>{
+  authMode=authMode==="login"?"signup":"login";updateAuth();$("authMessage").textContent="";
+});
+$("closeAuth").addEventListener("click",()=>$("authModal").classList.remove("open"));
+
+// Handle the demo sign-up and login form.
+$("authForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const email=$("authEmail").value.trim().toLowerCase(),password=$("authPassword").value;
+  if(authMode==="signup"){
+    if(demoAccounts[email]){$("authMessage").textContent="This demo account already exists in this tab.";return}
+    demoAccounts[email]=password;
+    $("authMessage").textContent="Demo account created. Signed in for this tab.";
+    setSignedIn(email);
+  }else{
+    if(demoAccounts[email]!==password){
+      $("authMessage").textContent="No matching demo account in this tab. Sign up first.";return;
+    }
+    $("authMessage").textContent="Logged in (demo).";setSignedIn(email);
+  }
+  $("authPassword").value="";
+  setTimeout(()=>$("authModal").classList.remove("open"),700);
+});
+</script>
+</body>
+</html>
