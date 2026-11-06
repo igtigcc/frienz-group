@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff4f8">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script defer src="assets/js/app.js"></script>
+  <title>Your chats — Freindz</title>
+  <meta name="description" content="A little place for your conversations.">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main class="container inner-page">
+    
+<section class="page-heading"><span class="eyebrow">SAY HELLO</span><h1>Your chats <span>💬</span></h1><p>Choose a conversation from the side and send a message.</p></section>
+<section class="panel chat-layout">
+  <aside class="chat-sidebar"><div class="sidebar-heading"><h2>Messages</h2><button class="icon-button" id="addContact" title="Add local contact">＋</button></div><div id="contactList" class="contact-list"></div></aside>
+  <div class="chat-main">
+    <div class="chat-person"><span class="avatar" id="activeAvatar">A</span><div><strong id="activeName">Alex</strong><small>Local demo conversation</small></div></div>
+    <div class="chat-window" id="chatWindow" aria-live="polite"></div>
+    <form id="chatForm" class="chat-compose"><input id="chatInput" maxlength="1000" placeholder="Write a message..." autocomplete="off" required><button class="button" type="submit">Send</button></form>
+    <p class="fine-print" id="chatNotice"></p>
+  </div>
+</section>
+
+  </main>
+  <div id="site-footer"></div>
+  <script defer src="assets/js/chat.js"></script>
+</body>
+</html>

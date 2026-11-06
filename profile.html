@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff4f8">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script defer src="assets/js/app.js"></script>
+  <title>Your profile — Freindz</title>
+  <meta name="description" content="Make a little profile for your local Freindz space.">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main class="container inner-page">
+    
+<section class="page-heading"><span class="eyebrow">A LITTLE ABOUT YOU</span><h1>Your profile <span>👤</span></h1><p>Share only what you feel comfortable sharing. Keep your location general.</p></section>
+<section class="panel profile-layout">
+  <div class="profile-picture-wrap"><img id="photoPreview" class="profile-picture" alt="Profile preview" hidden><div id="photoPlaceholder" class="profile-picture placeholder">📷</div><label class="button button-soft upload-label" for="photoInput">Choose photo</label><input id="photoInput" type="file" accept="image/*" hidden><small class="fine-print">JPG, PNG or WebP · max 2 MB</small></div>
+  <form id="profileForm" class="stack-form">
+    <label>Name<input id="profileName" maxlength="50" placeholder="What should people call you?"></label>
+    <label>Age (optional)<input id="profileAge" type="number" min="13" max="120" placeholder="Age"></label>
+    <label>General area<input id="profileArea" maxlength="80" placeholder="City or region — not your address"></label>
+    <label>Hobbies<input id="profileHobbies" maxlength="160" placeholder="Gaming, music, drawing..."></label>
+    <label>A little about yourself<textarea id="profileBio" maxlength="500" rows="4" placeholder="Tell people a little about you..."></textarea></label>
+    <button class="button" type="submit">Save profile</button><p id="profileStatus" class="status-message" role="status"></p>
+  </form>
+</section>
+
+  </main>
+  <div id="site-footer"></div>
+  <script defer src="assets/js/profile.js"></script>
+</body>
+</html>

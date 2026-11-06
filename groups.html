@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff4f8">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script defer src="assets/js/app.js"></script>
+  <title>Looking for group — Freindz</title>
+  <meta name="description" content="Find people to play with.">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main class="container inner-page">
+    
+<section class="page-heading"><span class="eyebrow">SQUAD UP</span><h1>Looking for group <span>🎮</span></h1><p>Post what you want to play and browse local demo posts.</p></section>
+<section class="panel">
+  <span class="eyebrow">START A SESSION</span><h2>Create a group post</h2>
+  <form id="groupForm" class="group-form">
+    <label>Game<input id="gameName" maxlength="60" placeholder="Minecraft, Fortnite, Rocket League..." required></label>
+    <label>Platform<select id="gamePlatform"><option>Xbox</option><option>PC</option><option>PlayStation</option><option>Switch</option><option>Cross-platform</option></select></label>
+    <label>Players needed<select id="gamePlayers"><option>1</option><option>2</option><option>3</option><option>4+</option></select></label>
+    <label class="full-field">Details<textarea id="gameDetails" maxlength="300" rows="3" placeholder="Casual, ranked, mic/no mic..." required></textarea></label>
+    <button class="button" type="submit">Post group</button>
+  </form>
+</section>
+<section class="section-heading group-heading"><div><span class="eyebrow">FIND YOUR PEOPLE</span><h2>Open group posts</h2></div><span class="post-count" id="postCount">0 posts</span></section>
+<div id="groupPosts" class="group-grid"></div>
+
+  </main>
+  <div id="site-footer"></div>
+  <script defer src="assets/js/groups.js"></script>
+</body>
+</html>

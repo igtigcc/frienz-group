@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff4f8">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script defer src="assets/js/app.js"></script>
+  <title>Hangout calendar — Freindz</title>
+  <meta name="description" content="Pick a date and plan something fun.">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main class="container inner-page">
+    
+<section class="page-heading"><span class="eyebrow">MAKE A PLAN</span><h1>Our calendar <span>📅</span></h1><p>Pick a date for your next little adventure.</p></section>
+<div class="content-grid calendar-layout">
+  <section class="panel">
+    <div class="calendar-top"><button class="icon-button" id="prevMonth" aria-label="Previous month">←</button><h2 id="monthTitle"></h2><button class="icon-button" id="nextMonth" aria-label="Next month">→</button></div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+    <div class="calendar-legend"><span class="legend-dot"></span> Planned hangout</div>
+  </section>
+  <aside class="panel">
+    <span class="eyebrow">ADD TO THE PLAN</span><h2>Plan a hangout</h2>
+    <form id="eventForm" class="stack-form">
+      <label>Date<input type="date" id="eventDate" required></label>
+      <label>Time<input type="time" id="eventTime" required></label>
+      <label>What are we doing?<input id="eventName" maxlength="90" placeholder="Movie night, walk, gaming..." required></label>
+      <label>Where are we meeting?<input id="eventPlace" maxlength="100" placeholder="At the park, online..."></label>
+      <button class="button" type="submit">Save hangout</button>
+    </form>
+  </aside>
+</div>
+<section class="panel event-panel"><div class="section-heading compact"><div><span class="eyebrow">YOUR PLANS</span><h2 id="eventHeading">Upcoming hangouts</h2></div><button class="text-button" id="showAllEvents" type="button">Show all</button></div><div id="eventList" class="event-list"></div></section>
+
+  </main>
+  <div id="site-footer"></div>
+  <script defer src="assets/js/calendar.js"></script>
+</body>
+</html>
